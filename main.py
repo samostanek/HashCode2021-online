@@ -1,10 +1,8 @@
 # 2021 <3
 # Let's go boyz
 
-from os import name
-from typing import List, Tuple
+from typing import List
 import sys
-import math
 import numpy as np
 
 
@@ -28,9 +26,7 @@ class Schedule:
 
   def __init__(self, intersection: Intersection):
     self.intersection = intersection
-    # [(0, incStreet) for incStreet in intersection.incommingStreets)]
     self.times = None
-    # self.scheduleTime = 0
 
 
 class Street:
@@ -47,9 +43,9 @@ class Street:
     self.start = start
     self.end = end
     self.time = time
+    # Total number of cars that crossed the street
     self.cars = 0
     self.score = 0
-    # self.score = 0
 
   def initIntersections(self):
     self.start.outcomingStreets.append(self)
@@ -173,11 +169,11 @@ fileNames = ['A.txt', 'B.txt', 'C.txt', 'D.txt', 'E.txt', 'F.txt']
 duration, carCount, F, streets, cars, intersections = parse(sys.argv[1])
 
 # Generate a schedule for each intersections
-# schedules: List[Tuple[Intersection, List[Tuple[int, Street]]]] = []
 for intersection in intersections:
+  # Compute greatest common denominator from all streets' total car traffic
   gcd = np.gcd.reduce([incSt.cars for incSt in intersection.incomingStreets])
-  # gcd = 10
-  intersection.schedule.times = [math.floor((min(incStr.cars // gcd, duration)//10), incStr)
+  # Set traffic light time for each incoming street according to it's traffic fraction of the total interseciton traffic
+  intersection.schedule.times = [(incStr.cars // gcd, incStr)
                                  for incStr in intersection.incomingStreets]
   intersection.schedule.times.sort(key=lambda x: x[0], reverse=True)
 
